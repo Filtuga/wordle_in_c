@@ -171,20 +171,19 @@ Words read_file(char *filename)
 
 int main(int argc, char *argv[])
 {
-    char *correct, *guess;
-    Result *res;
+    Words words;
+    words = read_file("wordList.txt");
+    char *p;
 
-    if (argc < 3)
+    if (!words.arr)
+        printf("Failed.\n");
+    else
     {
-        fprintf(stderr, "Usage: %s GUESSWORD CORRECTWORD\n", argv[0]);
-        return -1;
+        printf("n: %d\n", words.n);
+        p = *(words.arr);
+        printf("nr 100: '%s'\n", p[100]);
     }
 
-    guess = argv[1];
-    correct = argv[2];
-
-    res = check_word(guess, correct);
-    Example_print_result(res);
 
     return 0;
 }
