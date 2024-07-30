@@ -9,12 +9,20 @@
 #define ResultGreen 1
 #define ResultYellow 2
 #define ResultRed 4
+#define max 5195
 
+struct s_words
+{
+    char **arr;
+    int n;
+};
+
+typedef struct s_words Words;
 typedef char Result;
 
 void Example_print_result(Result[]);
 Result *check_word(char *, char *);
-bool isin(char, char*);
+bool isin(char, char *);
 Result check_char(char, int, char *);
 int main(int, char **);
 
@@ -60,7 +68,7 @@ bool isin(char c, char *str)
 
     size = strlen(str);
 
-    for (i=0; i < size; i++)
+    for (i = 0; i < size; i++)
     {
         if (str[i] == c)
         {
@@ -84,18 +92,21 @@ Result check_char(char guess, int index, char *word)
         return ResultRed;
 }
 
-char **read_file(char *filename, int max)
+Words read_file(char *filename)
 {
     char buff[8];
     int i, size;
     FILE *fd;
-    char *ret[5];
+    char **ret;
 
     fd = fopen(filename, "r");
     if (!fd)
     {
         perror("fopen");
-        return (char **)0;
+        Words words = {
+            .arr = (char **)0,
+            .n = 0};
+        return words;
     }
 
     size = max * 5; // 5 bites per variable
@@ -104,8 +115,13 @@ char **read_file(char *filename, int max)
     {
         fclose(fd);
         perror("malloc");
-        return (char **)0;
+        Words words = {
+            .arr = (char **)0,
+            .n = 0};
+        return words;
     }
+
+    i = 0;
 
     memset(buff, 0, 8);
     while (fgets(buff, 7, fd))
@@ -123,8 +139,34 @@ char **read_file(char *filename, int max)
 
         size--;
         buff[size] = 0; // removes \n
+
+        if (size != 5)
+        {
+            memset(buff, 0, 8);
+            continue;
+        }
+
+        ret[i][0] = buff[0];
+        ret[i][1] = buff[1];
+        ret[i][2] = buff[2];
+        ret[i][3] = buff[3];
+        ret[i][4] = buff[4];
+
+        memset(buff, 0, 8);
+        i++;
+
+        if (max <= i)
+        {
+            break;
+        }
     }
 
+    fclose(fd);
+    Words words = {
+        .arr = ret,
+        .n = i};
+
+    return words;
 }
 
 int main(int argc, char *argv[])
